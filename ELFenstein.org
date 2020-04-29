@@ -1,0 +1,7 @@
+#+TITLE: ELFenstein - Advanced ELF code in[j | f]ection
+#+AUTHOR: yaspr (2020)
+
+* Introduction
+
+  
+* 

@@ -1,0 +1,14 @@
+push rax;
+push rcx;
+push rdx;
+mov rax,4;            
+mov rbx,1 ;           
+mov rcx,0x00401650;
+mov rdx,14;     
+int 80h;          
+pop rdx;
+pop rcx;
+pop rax;
+mov rbx,0x004010e0;
+jmp rbx;
+
