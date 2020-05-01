@@ -11,7 +11,7 @@ c:
 	gcc -O0 -g3 test_capstone.c -o cs_disas -lcapstone 
 
 k:
-	gcc -O0 -g3 test_keystone.c -o ks_assem -lkeystone 
+	gcc -O0 -g3 test_keystone.c parse.c -o ks_assem -lkeystone 
 
 #
 clean:

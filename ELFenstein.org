@@ -1,7 +1,16 @@
 #+TITLE: ELFenstein - Advanced ELF code in[j | f]ection
 #+AUTHOR: yaspr (2020)
 
+#+CAPTION:
+#+NAME: fig:elfenstein_logo
+#+attr_html: :width 300px
+[[./img/LOGO.png]]
+
+
 * Introduction
 
-  
-* 
+* The ELF binary format  
+
+* Code injection
+
+* Conclusion
