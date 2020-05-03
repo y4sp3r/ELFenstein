@@ -104,21 +104,21 @@ int main(int argc, u8 **argv)
   size_t count;
   ks_engine *ks = NULL;
   
-  //
+  //Load payload assembly (PASM)
   code_file_t *c = load_code_file(argv[1]);
 
-  //Parsing var section
+  //
+  u64 cursor_pos = 0;
   var_section_t *v = NULL;
-
+  string_section_t *s = NULL;
+  
   //
-  u64 pos = get_var_section(c->code_file_code, &v);
-
-  //
+  cursor_pos = get_var_section(c->code_file_code, &v);
   
   //
   if (v)
     {
-      printf("Pos: %llu\n", pos);
+      printf("Pos: %llu\n", cursor_pos);
 
       for (u64 i = 0; i < v->var_section_nb_vars; i++)
 	{
@@ -138,7 +138,30 @@ int main(int argc, u8 **argv)
 	}
     }
 
-  printf("%c\n", c->code_file_code[pos]);
+  //
+  cursor_pos += get_string_section(c->code_file_code + cursor_pos, &s);
+
+  //
+  if (s)
+    {
+      printf("Pos: %llu\n", cursor_pos);
+
+      for (u64 i = 0; i < s->string_section_nb_strings; i++)
+	{
+	  printf("%llu @(%20llu) l(%20llu); %s\n",
+		 i,
+		 s->string_section_strings[i].string_address,
+		 s->string_section_strings[i].string_val_len,
+		 s->string_section_strings[i].string_val);
+	}
+      
+      printf("\n");
+    }
+
+  printf("%c%c%c\n",
+	 c->code_file_code[cursor_pos],
+	 c->code_file_code[cursor_pos + 1],
+	 c->code_file_code[cursor_pos + 2]);
   
   //
   free(v);

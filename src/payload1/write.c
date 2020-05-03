@@ -1,19 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 
 //
 int main(int argc, char **argv)
 {
   //
   if (argc < 2)
-    return printf("Usage %s [bin]\n", argv[0]), 2;
-  
-  //
-  execve(argv[1], NULL, NULL);
+    return printf("Usage %s [string]\n", argv[0]), 2;
 
   //
-  //syscall(SYS_execve, argv[1], NULL, NULL);
+  write(1, argv[1], strlen(argv[1]));
+
+  putchar('\n');
   
   return 0;
 }
