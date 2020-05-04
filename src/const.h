@@ -34,5 +34,13 @@
 //16 bytes
 #define MAX_KEY_LEN 16
 
+//Encryption/Decryption scheme
+#define CRYPT_TYPE_STATIC      0
+#define CRYPT_TYPE_POLYMORPHIC 1
+#define CRYPT_TYPE_METAMORPHIC 2
+
+//
+static u8 *crypt_type_str[] = { "static", "polymorphic", "metamorphic" };
+
 #endif
 

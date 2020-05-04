@@ -735,3 +735,112 @@ u32 get_string_section(u8 *p, string_section_t **s)
   //
   return i;
 }
+
+//
+u32 check_crypt_section(u8 *p)
+{
+  //
+  u32 i = 0;
+  u32 sec_name_len = 0;
+  u8 sec_name[MAX_STR_LEN];
+
+  //
+  i++;
+
+  //
+  i += skip(p + i);
+  
+  //
+  i += get_string(p + i, sec_name, &sec_name_len);
+
+  //
+  if (!strcmp(sec_name, "crypt"))
+    {
+      //
+      i += skip(p + i);
+      
+      //
+      return i;
+    }
+  else
+    return 0;
+}
+
+//
+u32 get_crypt_section(u8 *p, crypt_section_t **c)
+{
+  //
+  u32 i = 0;
+  u32 crypt_type_len = 0;
+  u8 crypt_type[MAX_STR_LEN];
+
+  //
+  (*c) = malloc(sizeof(crypt_section_t));
+  
+  //
+  i += get_string(p, crypt_type, &crypt_type_len);
+  
+  //
+  if (!strcmp(crypt_type, "static"))
+    {
+      (*c)->crypt_type = CRYPT_TYPE_STATIC;
+    }
+  else
+    if (!strcmp(crypt_type, "polymorphic"))
+      {
+	(*c)->crypt_type = CRYPT_TYPE_POLYMORPHIC;
+      }
+    else
+      if (!strcmp(crypt_type, "metamorphic"))
+	{
+	  (*c)->crypt_type = CRYPT_TYPE_METAMORPHIC;
+	}
+      else
+	{
+	  printf("Payload assembly: [ Error (%llu:%u): unknown encryption type '%s' ! ]\n", nb_lines, i, crypt_type);
+	  exit(1);
+	}
+  
+  //
+  i += skip(p + i);
+
+  //
+  if (p[i] != ']')
+    {
+      printf("Payload assembler: [ Error (%llu:%u): ']' expected, '%c' found instead ! ]\n", nb_lines, i, p[i]);
+      exit(1);
+    }
+
+  //
+  i++;
+
+  //
+  i += skip(p + i);
+  
+  //
+  while (p[i] && p[i] != '[')
+    {
+      if (p[i] == '#')
+	{
+	  //
+	  i++;
+	  
+	  //
+	  i += skip_comment(p + i);
+
+	  //
+	  i++;
+
+	  //
+	  i += skip(p + i);
+	}
+      else
+	{
+	  printf("Payload assembly: [ Error (%llu:%u): unknown symbol '%c', crypt section must be empty ! ]\n", nb_lines, i, p[i]);
+	  exit(1);
+	}
+    }
+  
+  //
+  return i;
+}

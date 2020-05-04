@@ -82,11 +82,28 @@ typedef struct string_section_s {
 } string_section_t;
 
 //
+typedef struct crypt_section_s {
+
+  //Static, polymorphic, metamorphic
+  u8 crypt_type;
+
+  //
+  u8 crypt_key[MAX_KEY_LEN];
+  
+} crypt_section_t;
+
+//
 u8 is_sep(u8 c);
 
 //
-u32 get_var_section(u8 *p, var_section_t **v);
-u32 get_string_section(u8 *p, string_section_t **s);
+u32 get_var_section(u8 *p, var_section_t **vs);
+
+//
+u32 get_string_section(u8 *p, string_section_t **ss);
+
+//
+u32 check_crypt_section(u8 *p);
+u32 get_crypt_section(u8 *p, crypt_section_t **cs);
 
 //
 #endif

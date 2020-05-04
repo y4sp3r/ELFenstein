@@ -45,25 +45,24 @@ Case 0: [crypt static]
 -------
 
 This statement signals to the assembler to use the same encryption routine
-and key (of length 10) for every execution (static).
+and key (of length 16) for every execution (static).
 The key is randomly generated before injection.
 
 General execution pattern:
 
 Load key --> Decrypt --> Execute --> Encrypt
 
-Case 1: [crypt poly]
+Case 1: [crypt polymorph]
 -------
 
 This statement allows for a polymorphic binary by refreshing/regenerating
-the encryption key after each execution. The new key will have a length between
-(MAX_KEY / 2) and MAX_KEY, with MAX_KEY = 16.
+an random encryption key after each execution.
 
 General execution pattern:
 
 Load current key (currK) -> Decrypt (currK) --> Execute --> Refresh key (newK) --> Encrypt (newK) --> Store new key (newK)
 
-Case 2: [crypt meta (xor, rot, encrypt0) ]
+Case 2: [crypt meta (xor, rot, rol) ]
 -------
 
 This statement adds metamorphism to the binary by injecting an encryption/decryption routine
@@ -78,7 +77,9 @@ key to encrypt the target data/code. When the encryption is finished, the key is
 Load decryption routine address --> Load current key (currK) -> Decrypt (currK) --> Execute --> Refresh key (newK) --> Pick a new algorithm --> Encrypt (newK) --> Store new key (newK) & 
 
 #
-[ crypt static max_key_len ]
+
+[ crypt polymorphic ]
+
 
 # Code section #
 [code]
@@ -90,34 +91,34 @@ Load decryption routine address --> Load current key (currK) -> Decrypt (currK) 
 label1:
 
 	print "Hello"; # Assembler MACRO #
-
+	
 	print {0}; # Assembler MACRO #
 	
 	exec {2}; # Assembler MACRO #
-
-	exec "/bin/ls"; 
 	
+	exec "/bin/ls"; 
+	     
 	rand reg, x, y; # Assembler MACRO #
 	
-	alloc REG, 20; # MACRO instruction. Allocate 20 bytes in var section and return the address in REG #
-
+	# alloc REG, 20; MACRO instruction. Allocate 20 bytes in var section and return the address in REG #
+	
 	# Write after read ==> Const prop #
 	add {out_num}, 1;
-	mov rbx,{out_num};	   
-
-	add rbx, 1		;
+	mov rbx, {out_num};	   
+		
+	add rbx, 1;
 	
 	# Read after write #
-	mov rbx,{out_num};
+	mov rbx, {out_num};
 	add {out_num}, 1;
-	mov rbx,{out_num};
+	mov rbx, {out_num};
 	
 	mov rax,4;                     # 'write' system call = 4 #
-	mov rbx,{out_num};	       # file descriptor 1 = STDOUT #
-	mov rcx,{1};          	       # string address to write #
-	mov rdx,{$1};     	       # length of string to write #
+	mov rbx, {out_num};	       # file descriptor 1 = STDOUT #
+	mov rcx, {1};          	       # string address to write #
+	mov rdx, {$1};     	       # length of string to write #
 	int 80h;              	       # call the kernel #
-			     
+		     
 	# Branch example #
 	jmp {label1};
 	

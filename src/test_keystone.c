@@ -109,63 +109,79 @@ int main(int argc, u8 **argv)
 
   //
   u64 cursor_pos = 0;
-  var_section_t *v = NULL;
-  string_section_t *s = NULL;
+  u64 crypt_cursor_pos  = 0;
+  var_section_t    *vs  = NULL;
+  string_section_t *ss  = NULL;
+  crypt_section_t  *cs  = NULL;
   
   //
-  cursor_pos = get_var_section(c->code_file_code, &v);
+  cursor_pos = get_var_section(c->code_file_code, &vs);
   
   //
-  if (v)
+  if (vs)
     {
       printf("Pos: %llu\n", cursor_pos);
 
-      for (u64 i = 0; i < v->var_section_nb_vars; i++)
+      for (u64 i = 0; i < vs->var_section_nb_vars; i++)
 	{
 	  printf("%20s @(%20llu) t(%5u) n(%20llu);\n\tbytes:\t",
-		 v->var_section_vars[i].var_name,
-		 v->var_section_vars[i].var_address,
-		 v->var_section_vars[i].var_type,
-		 v->var_section_vars[i].var_nb_val_bytes);
+		 vs->var_section_vars[i].var_name,
+		 vs->var_section_vars[i].var_address,
+		 vs->var_section_vars[i].var_type,
+		 vs->var_section_vars[i].var_nb_val_bytes);
 
 	  //
-	  for (u64 j = 0; j < v->var_section_vars[i].var_nb_val_bytes; j++)
+	  for (u64 j = 0; j < vs->var_section_vars[i].var_nb_val_bytes; j++)
 	    printf("(0x%02x, %c) ",
-		   (u8)v->var_section_vars[i].var_val[j],
-		   (is_sep((u8)v->var_section_vars[i].var_val[j])) ? ' ' : (u8)v->var_section_vars[i].var_val[j]);
+		   (u8)vs->var_section_vars[i].var_val[j],
+		   (is_sep((u8)vs->var_section_vars[i].var_val[j])) ? ' ' : (u8)vs->var_section_vars[i].var_val[j]);
 
 	  printf("\n\n");
 	}
     }
 
   //
-  cursor_pos += get_string_section(c->code_file_code + cursor_pos, &s);
+  cursor_pos += get_string_section(c->code_file_code + cursor_pos, &ss);
 
   //
-  if (s)
+  if (ss)
     {
       printf("Pos: %llu\n", cursor_pos);
 
-      for (u64 i = 0; i < s->string_section_nb_strings; i++)
+      for (u64 i = 0; i < ss->string_section_nb_strings; i++)
 	{
 	  printf("%llu @(%20llu) l(%20llu); %s\n",
 		 i,
-		 s->string_section_strings[i].string_address,
-		 s->string_section_strings[i].string_val_len,
-		 s->string_section_strings[i].string_val);
+		 ss->string_section_strings[i].string_address,
+		 ss->string_section_strings[i].string_val_len,
+		 ss->string_section_strings[i].string_val);
 	}
       
       printf("\n");
     }
 
-  printf("%c%c%c\n",
-	 c->code_file_code[cursor_pos],
-	 c->code_file_code[cursor_pos + 1],
-	 c->code_file_code[cursor_pos + 2]);
+  //
+  if ((crypt_cursor_pos = check_crypt_section(c->code_file_code + cursor_pos)))
+    {
+      //
+      cursor_pos += crypt_cursor_pos;
+
+      //
+      get_crypt_section(c->code_file_code + cursor_pos, &cs);
+    }
   
   //
-  free(v);
+  if (cs)
+    {
+      printf("Pos: %llu\n", cursor_pos);
+      
+      printf("Crypt type: %s\n", crypt_type_str[cs->crypt_type]); 
+    }
   
+  //
+  free(vs);
+  free(ss);
+  free(cs);
   
   /* // */
   /* size_t size; */
